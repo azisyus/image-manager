@@ -55,7 +55,7 @@ class ImageManagerServiceProvider extends EventServiceProvider
         ]);
 
         $this->publishes([
-            __DIR__.'/Vue' => resource_path('js/components1')
+            __DIR__.'/Vue' => resource_path('js')
         ],'managed-images');
     }
 
