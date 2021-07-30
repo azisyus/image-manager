@@ -15,7 +15,7 @@
                 <h2>Files to Upload (Drag them over)</h2>
             </div>
             <input type="file" multiple="multiple" name="files[]" id="file" @change="filesLoadedFromInput">
-            <draggable v-model="imageList"  :component-data="getComponentData()"  draggable=".img-wrapper">
+            <draggable v-model="images"  :component-data="getComponentData()"  draggable=".img-wrapper">
                 <div style="border:1px solid black; display:block;" v-for="(im,index) in images" :key="im.identifier" class="img-wrapper">
                     <image-file-box @chooseSpecialImage="chooseSpecialImage" :specialImageTypes="specialImages.map((x)=>x.image)" :index="index"  :initialImageData="im.imgdata" :initialInputData="im.f"   @newimage="uploadImageData" :uploadUrl="uploadUrl"  @ondelete="deleteImageFromList(im.identifier)"  />
                 </div>
@@ -121,7 +121,7 @@ export default {
         },
         uploadImageData: function(img,index,isUploading){
                 this.images[index].imgdata = img;
-                this.images[index].isUploading = img;
+                this.images[index].isUploading = isUploading;
                 console.log(index);
             console.log('parent model update');
         },
@@ -132,24 +132,19 @@ export default {
         },
 
         onStartCallback : function(){
-            this.beforeDragDropBuf = this.imageList;
-        },
-
-        onMoveCallback : function(evt, originalEvent){
-            return false;
+            this.beforeDragDropBuf = this.images;
         },
 
         handleChange : function()
         {
             let anyUploading = this.images.filter((image)=>{
-                return !image.isUploading;
+                return image.isUploading;
             });
-
-            if(anyUploading)
+            if(anyUploading.length)
             {
                 //in case of fail use latest state of sort
                 alert('wait until all images uploaded');
-                this.imageList = this.beforeDragDropBuf;
+                this.images = this.beforeDragDropBuf;
                 return false;
             }
 
@@ -167,7 +162,6 @@ export default {
                 on: {
                     start: this.onStartCallback,
                     end: this.handleChange,
-                    move:this.onMoveCallback
                 },
                 attrs:{
                     wrap: true
@@ -209,7 +203,6 @@ export default {
             dragIndexes:null,
             file: null,
             images:[],
-            imageList:[],
             globalIdentifier: 0,
             filesUrl:null,
             uploadUrl:null,
