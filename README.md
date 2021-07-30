@@ -163,10 +163,28 @@ Add to your config/app.php <br>
 
 ### VARIATION DEFINITION
 ```
-        ImageManager::defineSpecialImage('thumbnail',150,150);
-        ImageManager::defineSpecialImage('cover',150,150);
-        ImageManager::defineVariation('sliderListingImage',75,75,'gallery');
+ImageManager::defineSpecialImage('thumbnail',150,150); //choose thumbnail from uploaded images
+ImageManager::defineSpecialImage('cover',150,150); //choose thumbnail from uploaded images
+ImageManager::defineVariation('sliderListingImage',75,75,'gallery'); //generate variation for uploaded images except special ones
 ```
+
+### PRE-DEFINED COMPONENT NAMES
+```
+Vue.component('wrapper',require('./components/Wrapper.vue').default)
+Vue.component('ImageFileBox',require('./components/ImageFileBox').default);
+Vue.use(require('vuedraggable'))
+Vue.use(require('bootstrap-vue'));
+```
+
+### PRE-DEFINED VUE-COMPONENT
+Use this to build your component to your view <br>
+``
+{!! \Azizyus\ImageManager\VueGeneration\VueComponentBuilder::build(imageManager()) !!}
+``
+
+
+
+
 
 ### RE-GENERATE Variations
 
