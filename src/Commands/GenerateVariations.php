@@ -19,7 +19,7 @@ class GenerateVariations extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Regenerates variations';
 
     /**
      * Create a new command instance.
