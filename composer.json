@@ -1,0 +1,19 @@
+{
+    "name": "azizyus/image-manager",
+    "type": "library",
+    "require": {
+        "intervention/image": "^2.6"
+    },
+    "require-dev": {
+        "laravel/framework": "^7.29"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Azizyus\\ImageManager\\": "src/"
+        },
+        "files": [
+            "src/Helper/image_manager.php"
+        ]
+    }
+}

@@ -1,0 +1,1 @@
+<wrapper choosespecialimageurl="{{$chooseSpecialImageUrl}}" specialimagesurl="{{$specialImagesUrl}}" remoteuploadto="{{$remoteUploadUrl}}" cropfilesto="{{$cropFilesUrl}}" sortfilesto="{{$sortFilesUrl}}" fetchfilesfrom="{{$filesUrl}}"  uploadfilesto="{{$uploadUrl}}" ></wrapper>
