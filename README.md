@@ -27,7 +27,12 @@ Add to your config/app.php <br>
 ```php artisan vendor:publish --tag=managed-images``` <br>
 
 
-
+## NPM DEPENDENCIES
+```
+        "bootstrap-vue": "^2.21.2",
+        "vue-cropperjs": "^4.2.0",
+        "vuedraggable": "^2.24.3"
+```
 
 ## EXAMPLES
 
