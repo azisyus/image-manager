@@ -3,7 +3,7 @@
 
         <b-modal @close="cancelRemoteUrlUpload" @cancel="cancelRemoteUrlUpload" @ok="uploadViaRemoteUrl" ref="remote-url-modal" id="remote-url-modal" title="Remote Url">
             <input v-model="remoteUrl" type="text" name="remoteUrl" id="" value="https://lh3.googleusercontent.com/proxy/bQjUA3bwC5NSCHaUWcrI5sbQcOltmi39Z1Fo0MqWqp6vdLwSsvzueIWfZCGvMFhiE2kenLA-dx9TcI883ehqioUSfHcJ0714cCC8k7ax8wL3i_AEhFxnfAIgT-4vIxaRFhrgqJs4JA">
-<!--            <button @click="uploadViaRemoteUrl">LOAD</button>-->
+            <!--            <button @click="uploadViaRemoteUrl">LOAD</button>-->
         </b-modal>
         <button  @click="openImportUrlModal">IMPORT FROM URL</button>
 
@@ -72,7 +72,9 @@ export default {
 
             axios.post(this.choosespecialimageurl,{
                 'fileName':fileName,
-                'type':type
+                'type':type,
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+
             }).then((response) => {
                 this.fetchSpecialImages();
             }).catch(function(err){
@@ -95,34 +97,36 @@ export default {
             });
         },
         uploadViaRemoteUrl:function(e){
-                e.preventDefault();
-                axios.post(this.remoteuploadto,{
-                    'url':this.remoteUrl,
-                }).then((result) => {
-                    var newImage = result.data;
-                    this.pushFile(newImage,null);
-                    this.remoteUrl = null;
-                    this.$refs['remote-url-modal'].hide();
-                }).catch(function(error){
-                    alert(error.response.data.error);
-                });
+            e.preventDefault();
+            axios.post(this.remoteuploadto,{
+                'url':this.remoteUrl,
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+
+            }).then((result) => {
+                var newImage = result.data;
+                this.pushFile(newImage,null);
+                this.remoteUrl = null;
+                this.$refs['remote-url-modal'].hide();
+            }).catch(function(error){
+                alert(error.response.data.error);
+            });
         },
         filesLoadedFromInput:async function(event){
-           this.addFile(null,event.target.files);
+            this.addFile(null,event.target.files);
         },
 
         fetchFiles: async function()
         {
             axios.get(this.filesUrl).then((response) => {
-              response.data.map((item) => {
-                  this.pushFile(item,null);
+                response.data.map((item) => {
+                    this.pushFile(item,null);
                 });
             });
         },
         uploadImageData: function(img,index,isUploading){
-                this.images[index].imgdata = img;
-                this.images[index].isUploading = isUploading;
-                console.log(index);
+            this.images[index].imgdata = img;
+            this.images[index].isUploading = isUploading;
+            console.log(index);
             console.log('parent model update');
         },
         deleteImageFromList:function (f) {
@@ -152,7 +156,9 @@ export default {
                 return image.imgdata.fileName;
             });
             axios.post(this.sortFilesUrl,{
-                'fileNames':fileNames
+                'fileNames':fileNames,
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+
             }).then(function(result){
                 console.log(result);
             });
@@ -173,7 +179,7 @@ export default {
             if(files.length!==0)
                 droppedFiles = files;
             else
-               droppedFiles = e.dataTransfer.files;
+                droppedFiles = e.dataTransfer.files;
             if(!droppedFiles) return;
             console.log(droppedFiles);
             ([...droppedFiles]).forEach(f => {
@@ -182,12 +188,12 @@ export default {
 
         },
         pushFile : function(imgdata = null,f = null){
-          this.images.push({
-              imgdata:imgdata,
-              f:f,
-              identifier:this.globalIdentifier++,
-              isUploading:false,
-          });
+            this.images.push({
+                imgdata:imgdata,
+                f:f,
+                identifier:this.globalIdentifier++,
+                isUploading:false,
+            });
         },
     },
     props:{
