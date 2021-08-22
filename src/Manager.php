@@ -125,6 +125,14 @@ class Manager
     }
 
     /**
+     * @param FilesystemAdapter $adapter
+     */
+    public function setAdapter($adapter)
+    {
+        $this->adapter = $adapter;
+    }
+
+    /**
      * @param string $key
      * @param int $width
      * @param int $height
