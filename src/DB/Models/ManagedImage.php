@@ -60,4 +60,9 @@ class ManagedImage extends Model
         return imageManager()->map()($this);
     }
 
+    public function toArray()
+    {
+        return $this->map();
+    }
+
 }
