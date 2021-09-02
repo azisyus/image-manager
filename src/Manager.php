@@ -651,7 +651,7 @@ class Manager
 
     public function copyImageIntoNewModel(Model $oldModel,Model $newModel) : void
     {
-        $allImages = $oldModel->allImages()->get();
+        $allImages = $oldModel->wholeImages()->get();
 
         $generateNewFileNameByExtension = function(string $fileName,string $extension){
             $newFileName = $this->generateRandomFileName($extension);
@@ -676,10 +676,10 @@ class Manager
             },$newManagedImage->variations);
 
             $newModel->wholeImages()->updateOrCreate(
-                ['relatedModelId'=>$newModel->id,'relatedModel'=>get_class($newModel)],
+                ['relatedModelId'=>$newModel->id,'relatedModel'=>get_class($newModel),'fileName'=>$newManagedImage->fileName],
                 array_merge($newManagedImage->attributesToArray(),['relatedModelId'=>$newModel->id,'relatedModel'=>get_class($newModel)]));
 
-            
+
 
         }
 

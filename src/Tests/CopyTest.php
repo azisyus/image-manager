@@ -33,13 +33,17 @@ class CopyTest extends BaseTestCase
         imageManager()->defineVariation('sliderSmall',75,75,'gallery');
 
         $result = ImageManager::withModel($t1,function(){
-            return imageManager()->upload($this->fetchUploadedFile());
+            $result = imageManager()->upload($this->fetchUploadedFile());
+            imageManager()->upload($this->fetchUploadedFile());
+            imageManager()->upload($this->fetchUploadedFile());
+            \imageManager()->chooseSpecialImage('listingPic',$result['fileName']);
+            \imageManager()->chooseSpecialImage('listingPic',$result['fileName']);
+            \imageManager()->chooseSpecialImage('sliderSmall',$result['fileName']);
+            return $result;
         });
-
 
         $this->assertTrue($result['success']);
         imageManager()->copyImageIntoNewModel($t1,$t2);
-
 
         $this->assertEquals($t1->wholeImages()->count(),$t2->wholeImages()->count());
         $t2Images = $t2->wholeImages()->get();
