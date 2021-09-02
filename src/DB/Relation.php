@@ -29,6 +29,14 @@ trait Relation
                 ->where('relatedModel',$this->getMorphClass())
                 ->where('type','gallery');
         }
+        else if($name === 'wholeImages')
+        {
+            //no type will be provided to fetch everything
+            //it's mostly used while copying models
+            //there is way to guess dynamically defined image relations so simply we fetch everything
+            return $this->hasMany(ManagedImage::class,'relatedModelId','id')
+                ->where('relatedModel',$this->getMorphClass());
+        }
         return parent::__call($name,$arguments);
     }
 

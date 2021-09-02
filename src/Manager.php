@@ -9,6 +9,7 @@ use Azizyus\ImageManager\DB\Repository;
 use Azizyus\ImageManager\Exceptions\RecordDoesNotExist;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Collection;
@@ -646,6 +647,42 @@ class Manager
     public function checkFileExist(string $fileName) : bool
     {
         return $this->adapter->exists($fileName);
+    }
+
+    public function copyImageIntoNewModel(Model $oldModel,Model $newModel) : void
+    {
+        $allImages = $oldModel->allImages()->get();
+
+        $generateNewFileNameByExtension = function(string $fileName,string $extension){
+            $newFileName = $this->generateRandomFileName($extension);
+            $this->adapter->copy($fileName,$newFileName);
+            return $newFileName;
+        };
+
+        /**
+         * @var ManagedImage $image
+         */
+        foreach ($allImages as $image)
+        {
+            $newManagedImage = $image->replicate();
+            $newManagedImage->fileName = $generateNewFileNameByExtension($image->fileName,$image->extension);
+            $newManagedImage->originalFileName = $generateNewFileNameByExtension($image->originalFileName,$image->extension);
+
+            $newManagedImage->variations = call_user_func(function(array $variations)use($generateNewFileNameByExtension){
+                $x=[];
+                foreach ($variations as $key => $v)
+                    $x[$key] = $generateNewFileNameByExtension($v,'jpg');
+                return $x;
+            },$newManagedImage->variations);
+
+            $newModel->wholeImages()->updateOrCreate(
+                ['relatedModelId'=>$newModel->id,'relatedModel'=>get_class($newModel)],
+                array_merge($newManagedImage->attributesToArray(),['relatedModelId'=>$newModel->id,'relatedModel'=>get_class($newModel)]));
+
+            
+
+        }
+
     }
 
 }

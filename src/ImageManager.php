@@ -110,4 +110,10 @@ class ImageManager extends Facade
             return $result;
         return response($result,400);
     }
+
+    public static function copyImageIntoNewModel(Model $oldModel,Model $newModel) : void
+    {
+        self::getFacadeRoot()->copyImageIntoNewModel($oldModel,$newModel);
+    }
+
 }
