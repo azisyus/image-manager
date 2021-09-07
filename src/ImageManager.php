@@ -41,6 +41,11 @@ class ImageManager extends Facade
         return response($r,400);
     }
 
+    public static function setValidation(string $s)
+    {
+        self::getFacadeRoot()->setValidation($s);
+    }
+
     public static function specialImages()
     {
         $r = self::getFacadeRoot()->specialImages();
@@ -70,12 +75,9 @@ class ImageManager extends Facade
 
     public static function upload(Request $request)
     {
-        $validator = Validator::make($request->all(),[
+        Validator::make($request->all(),[
             'file' =>  self::getFacadeRoot()->getValidation(),
-        ]);
-
-        if($validator->fails())
-            return  response(self::getFacadeRoot()->makeNotFileFail(),400);
+        ])->validate();
 
         $file = $request->file('file');
         $result = self::getFacadeRoot()->upload($file);

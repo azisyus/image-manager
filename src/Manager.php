@@ -50,7 +50,7 @@ class Manager
     /**
      * @var string
      */
-    protected $validation = 'mimes:jpeg,jpg,png,bmp';
+    protected $validation = 'mimes:jpeg,jpg,png,bmp|max:1024';
 
     /**
      * @var String

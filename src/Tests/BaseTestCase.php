@@ -26,4 +26,9 @@ class BaseTestCase extends TestCase
         return new UploadedFile(__DIR__.'/File/test.txt',"UL_IMAGE",mime_content_type(__DIR__.'/File/test.txt'),UPLOAD_ERR_OK,true);
     }
 
+    protected function fetch1dot8MbFile() : UploadedFile
+    {
+        return new UploadedFile(__DIR__.'/Images/1.8mb_image.jpg',"UL_IMAGE",mime_content_type(__DIR__.'/Images/1.8mb_image.jpg'),UPLOAD_ERR_OK,true);
+    }
+
 }
