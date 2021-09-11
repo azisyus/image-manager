@@ -63,6 +63,27 @@ class Manager
     protected $specialImagesUrl = null;
 
     /**
+     * @var int
+     */
+    protected $uploadImageLimit = 15;
+
+    /**
+     * @return int
+     */
+    public function getUploadImageLimit(): int
+    {
+        return $this->uploadImageLimit;
+    }
+
+    /**
+     * @param int $uploadImageLimit
+     */
+    public function setUploadImageLimit(int $uploadImageLimit): void
+    {
+        $this->uploadImageLimit = $uploadImageLimit;
+    }
+
+    /**
      * @return String
      */
     public function getChooseSpecialImageUrl(): ?string

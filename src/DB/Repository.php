@@ -22,6 +22,16 @@ class Repository
         $this->model = $model;
     }
 
+    /**
+     * @return int
+     */
+    public function getModelImageCount() : int
+    {
+        return $this->baseQuery()
+            ->where('type','gallery')
+            ->count();
+    }
+
     protected function baseQuery()
     {
         if($this->model)

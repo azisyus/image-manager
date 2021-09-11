@@ -85,36 +85,25 @@ export default {
         //     this.$emit('cropstart',this.img);
         // },
         uploadFile: function (file,action) {
+            this.imageUploadErrors = null;
             this.uploading = true;
-            const options = {
+            console.log(file);
+            var formData = new FormData();
+            formData.append('file',file);
+            axios.post(action,formData,{
                 headers: {
-                    'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'X-Requested-With':'XMLHttpRequest',
+                    'Content-Type': 'multipart/form-data'
                 },
-                // withCredentials: withCookie,
-                file,
-                // data: {},
-                filename: 'file',
-                action,
-                onProgress: e => {
-                    this.uploadPercent = ~~e.percent;
-                    this.onProgress(e, file);
-                },
-                onSuccess: res => {
-                    this.uploadPercent = 0;
-                    this.uploading = false;
-                    this.uploaded = true;
-                    this.onSuccess(res, file);
-                },
-                onError: err => {
-                    this.uploadPercent = 0;
-                    this.uploading = false;
-                    this.uploadFailed = true;
-                    this.onError(err, file);
-                }
-            };
+                onUploadProgress: e => this.uploadPercent = ~~e.percent
+            }).then((response) => {
+                this.uploading = false;
+                this.img = response.data;
+                this.$emit('newimage',this.img,this.index,this.uploading);
+            }).catch((error)=>{
+                this.imageUploadErrors =  error.response.data.errors;
+                this.uploading = false;
+            });
             this.$emit('newimage',this.img,this.index,this.uploading);
-            ajax(options);
         },
         onProgress:function(e,file){
 
@@ -138,18 +127,24 @@ export default {
         },
         destroyImage : function()
         {
-            axios.post(this.img.deleteUrl,{
-                fileName:this.img.fileName,
-                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-
-            }).then((response) => {
-                var result = response.data;
-                console.log(result);
-                console.log('deleting image: '+this.img.fileName);
+            if(this.imageUploadErrors !== null)
                 this.$emit('ondelete');
-            }).catch(function(error){
-                alert(error.response.data.error);
-            });
+            else
+            {
+                axios.post(this.img.deleteUrl,{
+                    fileName:this.img.fileName,
+                    csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+
+                }).then((response) => {
+                    // var result = response.data;
+                    // console.log(result);
+                    // console.log('deleting image: '+this.img.fileName);
+                    this.$emit('ondelete');
+                }).catch(function(error){
+                    // alert(error.response.data.error);
+                    console.log(error);
+                });
+            }
         }
     },
 
@@ -175,6 +170,8 @@ export default {
             globalIdentifier:null,
             cropperImage:null,
             showingImage:null,
+            imageUploadErrors:null,
+
 
         };
     },

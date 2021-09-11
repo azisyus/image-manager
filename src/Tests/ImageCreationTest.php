@@ -4,11 +4,13 @@
 namespace Azizyus\ImageManager\Tests;
 
 
+use Azizyus\ImageManager\ImageManager;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
-class ImageCreationTest extends TestCase
+class ImageCreationTest extends BaseTestCase
 {
 
     protected function setUp(): void
@@ -58,5 +60,23 @@ class ImageCreationTest extends TestCase
         $result = imageManager()->withIds($ids);
         $this->assertEquals(3,count($result));
     }
+
+    public function testUploadImageLimit()
+    {
+        $this->withoutExceptionHandling();
+        ImageManager::setUploadLimit(3);
+        $r = Request::create('_','POST',[],[],['file' => $this->fetchUploadedFile()]);
+        ImageManager::upload($r);
+        ImageManager::upload($r);
+        ImageManager::upload($r);
+
+        $this->expectException(ValidationException::class);
+        ImageManager::upload($r);
+
+        $this->assertEquals(3,ImageManager::getModelImageCount());
+
+
+    }
+
 
 }

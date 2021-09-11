@@ -73,10 +73,28 @@ class ImageManager extends Facade
         return response($result,400);
     }
 
+    public static function setUploadLimit(int $limit)
+    {
+        self::getFacadeRoot()->setUploadImageLimit($limit);
+    }
+
+    public static function getModelImageCount() : int
+    {
+        return self::getFacadeRoot()->getRepository()->getModelImageCount();
+    }
+
     public static function upload(Request $request)
     {
-        Validator::make($request->all(),[
+        Validator::make(array_merge($request->all(),[
+            'totalImageCount' => self::getFacadeRoot()->getRepository()->getModelImageCount(),
+        ]),[
             'file' =>  self::getFacadeRoot()->getValidation(),
+            'totalImageCount' => function($name,$value,$fail)
+            {
+                $limit = self::getFacadeRoot()->getUploadImageLimit();
+                if($value+1 > $limit)
+                    $fail('you can only upload '.$limit.' image');
+            }
         ])->validate();
 
         $file = $request->file('file');
