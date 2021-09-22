@@ -341,14 +341,14 @@ class Manager
                      * @var ManagedImage $imageRecord
                      */
 
-                    $resized = Image::make($file);
+                    $resized = Image::make($file)->resize($variation['width'],$variation['height'],function($c){
+                        $c->aspectRatio();
+                    });
 
-                    if($nocanvas)
-                        return $resized->resize($variation['width'],$variation['height'],function($c){
-                            $c->aspectRatio();
-                        })->encode($imageRecord->extension)
-                            ->getEncoded();
+                    if($nocanvas) //no absolute canvas just return
+                        return $resized->encode($imageRecord->extension)->getEncoded();
 
+                    //import insert into canvas to achieve absolute width-height for everyimage
                     $canvas = Image::canvas($variation['width'],$variation['height']);
                     return $canvas->insert($resized,'center')
                             ->encode($imageRecord->extension)
