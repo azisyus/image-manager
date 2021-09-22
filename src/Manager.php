@@ -279,10 +279,10 @@ class Manager
      * @param string $key
      * @param array $params
      * $params = [
-     *      'width'     => (string) image width.
-     *      'height'    => (string) image height.
-     *      'type'      => (string) image type.
-     *      'zoom'      => (bool)   generated uses this parameter to generate center zoomed images to fill container.
+     *      'width'         => (string) image width.
+     *      'height'        => (string) image height.
+     *      'type'          => (string) image type.
+     *      'noCanvas'      => (bool)   generates image without centered canvas
      *   ]
      */
     public function defineVariationImageWithOptions(string $key,array $params=[])
