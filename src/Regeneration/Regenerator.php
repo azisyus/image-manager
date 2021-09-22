@@ -1,5 +1,6 @@
 <?php
 
+namespace Azizyus\ImageManager\Regeneration;
 
 use Azizyus\ImageManager\DB\Models\ManagedImage;
 
