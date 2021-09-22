@@ -12,6 +12,7 @@ use GuzzleHttp\Exception\TransferException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
@@ -262,6 +263,7 @@ class Manager
      * @param string $key
      * @param int|null $width
      * @param int|null $height
+     * @deprecated
      */
     public function defineVariation(string $key, int $width = null, int $height = null,string $type)
     {
@@ -270,6 +272,25 @@ class Manager
             'height' => $height,
             'type'   => $type??'gallery',
         ]);
+    }
+
+
+    /**
+     * @param string $key
+     * @param array $params
+     * $params = [
+     *      'width'     => (string) image width.
+     *      'height'    => (string) image height.
+     *      'type'      => (string) image type.
+     *      'zoom'      => (bool)   generated uses this parameter to generate center zoomed images to fill container.
+     *   ]
+     */
+    public function defineVariationImageWithOptions(string $key,array $params=[])
+    {
+        $type = Arr::get($params,'type','gallery');
+        $this->maintainableVariations->put($key,array_merge($params,[
+            'type' => $type
+        ]));
     }
 
     /**
@@ -306,24 +327,42 @@ class Manager
          */
         $imageRecord = $this->repository->getByFileName($fileName);
 
-
         $r = $this->maintainableVariations
             ->whereIn('type',[$imageRecord->type,'global','zoneThumbnail'])
             ->map(function(array $variation)use($file,$imageRecord){
-            $newVariationImageName = $this->generateRandomFileName($imageRecord->extension);
-            $canvas = Image::canvas($variation['width'],$variation['height']);
-            $resized = Image::make($file)->resize($variation['width'],$variation['height'],function($c){
-                $c->aspectRatio();
-            });
-            $resized = $canvas->insert($resized,'center')
-                ->encode($imageRecord->extension)
-                ->getEncoded();
-            $this->adapter->put(
-              $newVariationImageName,
-              $resized
-            );
 
-            return $newVariationImageName;
+                $noCanvas = Arr::get($variation,'noCanvas',false);
+                $newVariationImageName = $this->generateRandomFileName($imageRecord->extension);
+                $resized = call_user_func_array(function(bool $nocanvas,$variation,$imageRecord,$file)
+                {
+                    /**
+                     * @var \Intervention\Image\Image $canvas
+                     * @var \Intervention\Image\Image $resized
+                     * @var ManagedImage $imageRecord
+                     */
+
+                    $resized = Image::make($file);
+
+                    if($nocanvas)
+                        return $resized->resize($variation['width'],$variation['height'],function($c){
+                            $c->aspectRatio();
+                        })->encode($imageRecord->extension)
+                            ->getEncoded();
+
+                    $canvas = Image::canvas($variation['width'],$variation['height']);
+                    return $canvas->insert($resized,'center')
+                            ->encode($imageRecord->extension)
+                            ->getEncoded();
+
+                },[$noCanvas,$variation,$imageRecord,$file]);
+
+
+                $this->adapter->put(
+                  $newVariationImageName,
+                  $resized
+                );
+
+                return $newVariationImageName;
         });
 
         //delete old variations
