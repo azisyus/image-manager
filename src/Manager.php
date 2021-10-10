@@ -15,6 +15,7 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
 class Manager
@@ -709,15 +710,25 @@ class Manager
         return $this->adapter->exists($fileName);
     }
 
-    public function copyImageIntoNewModel(Model $oldModel,Model $newModel) : void
+    /**
+     * @return callable
+     */
+    public function copyImage() : callable
     {
-        $allImages = $oldModel->wholeImages()->get();
-
-        $generateNewFileNameByExtension = function(string $fileName,string $extension){
+        return function(string $fileName,string $extension = null) {
+            if(!$extension)
+                $extension = pathinfo($fileName,PATHINFO_EXTENSION);
             $newFileName = $this->generateRandomFileName($extension);
             $this->adapter->copy($fileName,$newFileName);
             return $newFileName;
         };
+    }
+
+    public function copyImageIntoNewModel(Model $oldModel,Model $newModel) : void
+    {
+        $allImages = $oldModel->wholeImages()->get();
+
+        $generateNewFileNameByExtension = $this->copyImage();
 
         /**
          * @var ManagedImage $image

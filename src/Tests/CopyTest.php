@@ -10,11 +10,13 @@ use Azizyus\ImageManager\DB\Test\TestModel;
 use Azizyus\ImageManager\ImageManager;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Intervention\Image\Facades\Image;
+use PHPUnit\Util\Test;
 
 class CopyTest extends BaseTestCase
 {
 
-    public function testCopy()
+    private function defineTestHead()
     {
         foreach (['test_models','next_test_models'] as $t)
         {
@@ -24,14 +26,23 @@ class CopyTest extends BaseTestCase
                 $blueprint->timestamps();
             });
         }
-        $t1 = TestModel::create();
+        TestModel::create();
 
         NextTestModel::create();
-        $t2 = NextTestModel::create();
+        NextTestModel::create();
         imageManager()->defineVariation('listingPic',300,300,'gallery');
         imageManager()->defineVariation('sliderBig',900,900,'gallery');
         imageManager()->defineVariation('sliderSmall',75,75,'gallery');
 
+
+    }
+
+    public function testCopy()
+    {
+
+        $this->defineTestHead();
+        $t1 = TestModel::first();
+        $t2 = NextTestModel::orderBy('id','DESC')->first();
         $result = ImageManager::withModel($t1,function(){
             $result = imageManager()->upload($this->fetchUploadedFile());
             imageManager()->upload($this->fetchUploadedFile());
@@ -63,6 +74,35 @@ class CopyTest extends BaseTestCase
 
 
 
+    }
+
+
+    public function testDirectCopyImage()
+    {
+
+        $this->defineTestHead();
+        $t1 = TestModel::first();
+        $result = ImageManager::withModel($t1,function(){
+            $result = imageManager()->upload($this->fetchUploadedFile());
+            imageManager()->upload($this->fetchUploadedFile());
+            imageManager()->upload($this->fetchUploadedFile());
+            \imageManager()->chooseSpecialImage('listingPic',$result['fileName']);
+            \imageManager()->chooseSpecialImage('listingPic',$result['fileName']);
+            \imageManager()->chooseSpecialImage('sliderSmall',$result['fileName']);
+            return $result;
+        });
+        $t1->refresh();
+
+        $t1->load('listingPicImage');
+
+        $copier = \imageManager()->copyImage();
+        $newImageName = $copier($t1->listingPicImage->variations['zoneThumbnail']);
+
+
+        $this->assertTrue(\imageManager()->checkFileExist($newImageName));
+        $image = Image::make(\imageManager()->generateFileUrl($newImageName));
+        $this->assertEquals(150,$image->height());
+        $this->assertEquals(150,$image->width());
     }
 
 }
