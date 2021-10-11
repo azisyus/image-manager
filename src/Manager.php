@@ -516,6 +516,20 @@ class Manager
      */
     public function upload(UploadedFile $file) : array
     {
+
+        Validator::validate([
+            'file' => $file,
+            'totalImageCount' => $this->getRepository()->getModelImageCount(),
+        ],[
+            'file' =>  $this->getValidation(),
+            'totalImageCount' => function($name,$value,$fail)
+            {
+                $limit = $this->getUploadImageLimit();
+                if($value+1 > $limit)
+                    $fail('you can only upload '.$limit.' image');
+            }
+        ]);
+
         $fileName = $this->generateRandomFileName($file->extension());
         $originalFileName = $this->generateRandomFileName($file->extension());
 
@@ -653,12 +667,7 @@ class Manager
     public function importFromUrl(string $url) : array
     {
 
-        $v = Validator::make(['url' => $url],['url' => 'url']);
-        if($v->fails())
-            return [
-                'success' => false,
-                'error' => 'url is not valid'
-            ];
+        Validator::validate(['url' => $url],['url' => 'url']);
 
         $baseName = basename($url);
         $extension = pathinfo($baseName,PATHINFO_EXTENSION);
@@ -682,6 +691,18 @@ class Manager
 
             },$url);
 
+
+
+            Validator::validate([
+                'totalImageCount' => $this->getRepository()->getModelImageCount(),
+            ],[
+                'totalImageCount' => function($name,$value,$fail) use($detectedImages)
+                {
+                    $limit = $this->getUploadImageLimit();
+                    if($value+count($detectedImages) > $limit)
+                        $fail('you can only upload '.$limit.' image');
+                }
+            ]);
 
             $uploadedFiles = [];
             foreach ($detectedImages as $detectedImage)
@@ -731,17 +752,11 @@ class Manager
         file_put_contents($tmpfname,$file);
         $u = new UploadedFile($tmpfname,"UL_IMAGE",mime_content_type($tmpfname),UPLOAD_ERR_OK,true);
 
-        $v = Validator::make([
+        Validator::validate([
             'file' => $u,
         ],[
             'file' => $this->validation
         ]);
-
-        if($v->fails())
-            return [
-                'success' => false,
-                'error' => 'not a image'
-            ];
 
         return $this->upload($u);
     }

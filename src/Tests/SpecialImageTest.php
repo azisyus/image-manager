@@ -37,6 +37,7 @@ class SpecialImageTest extends BaseTestCase
             'noCanvas' => true,
 
         ]);
+        imageManager()->setValidation('max:2084|mimes:jpg');
         $result = imageManager()->upload($this->fetch1dot8MbFile());
         imageManager()->chooseSpecialImage('listingThumbnail',$result['fileName']);
 

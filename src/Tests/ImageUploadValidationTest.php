@@ -16,9 +16,8 @@ class ImageUploadValidationTest extends BaseTestCase
         $this->expectException(ValidationException::class); //validation error due to bigger file size than expected
         $this->withoutExceptionHandling();
         $f = $this->fetch1dot8MbFile();
-        $r = new Request();
-        $r->merge([
-            'file' => $f
+        $r = Request::create('_','POST',[],[],[
+            'file' => $f,
         ]);
         ImageManager::upload($r);
     }

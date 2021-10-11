@@ -22,7 +22,7 @@ class ImageCreationTest extends BaseTestCase
     public function testCreation()
     {
 
-        $u = new UploadedFile(__DIR__.'/Images/test_image.jpg','test_image.jpg');
+        $u = $this->fetchUploadedFile();
         $result = imageManager()->upload($u);
         $src = $result['imgSrc'];
         $originalSrc = $result['originalSrc'];
@@ -48,7 +48,7 @@ class ImageCreationTest extends BaseTestCase
     public function testFetchSpecificImages()
     {
 
-        $u = new UploadedFile(__DIR__.'/Images/test_image.jpg','test_image.jpg');
+        $u = $this->fetchUploadedFile();
         imageManager()->upload($u);
         imageManager()->upload($u);
         imageManager()->upload($u);

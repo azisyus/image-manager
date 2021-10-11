@@ -11,7 +11,7 @@ class ImageSortTest extends BaseTestCase
 
     public function testSortUpdate()
     {
-        $u = new UploadedFile(__DIR__.'/Images/test_image.jpg','test_image.jpg');
+        $u = $this->fetchUploadedFile();
         $result = imageManager()->upload($u);
         $result1 = imageManager()->upload($u);
 
