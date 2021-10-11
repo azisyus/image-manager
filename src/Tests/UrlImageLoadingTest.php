@@ -41,4 +41,14 @@ class UrlImageLoadingTest extends BaseTestCase
 
     }
 
+    public function testOgImageParsing()
+    {
+        $result1 = imageManager()->importFromUrl('https://shop.bulletproof.com/products/brain-octane-oil-32-oz');
+        $result2 = imageManager()->importFromUrl('https://www.w3schools.com/css/img_mountains.jpg');
+        $this->assertEquals(true,$result1['success']);
+        $this->assertEquals(true,$result2['success']);
+        $this->assertEquals(4,\imageManager()->getFiles()->count());
+    }
+
+
 }

@@ -103,8 +103,10 @@ export default {
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
 
             }).then((result) => {
-                var newImage = result.data;
-                this.pushFile(newImage,null);
+                var newImages = result.data.images;
+                newImages.map((im) => {
+                    this.pushFile(im,null);
+                });
                 this.remoteUrl = null;
                 this.$refs['remote-url-modal'].hide();
             }).catch(function(error){

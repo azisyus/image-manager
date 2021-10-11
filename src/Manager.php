@@ -7,8 +7,10 @@ namespace Azizyus\ImageManager;
 use Azizyus\ImageManager\DB\Models\ManagedImage;
 use Azizyus\ImageManager\DB\Repository;
 use Azizyus\ImageManager\Exceptions\RecordDoesNotExist;
+use Fusonic\OpenGraph\Consumer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Psr7\HttpFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Filesystem\FilesystemAdapter;
@@ -658,6 +660,49 @@ class Manager
                 'error' => 'url is not valid'
             ];
 
+        $baseName = basename($url);
+        $extension = pathinfo($baseName,PATHINFO_EXTENSION);
+        if($extension) //single image
+            return [
+                'success' => true,
+                'images' => [
+                    $this->importSingleImage($url)
+                ]
+            ];
+        else
+        {
+
+            $detectedImages = call_user_func(function(string $url){
+
+                $consumer = new Consumer(new Client(), new HttpFactory());
+                $object = $consumer->loadUrl($url);
+                return array_map(function($image) {
+                    return $image->url;
+                },$object->images);
+
+            },$url);
+
+
+            $uploadedFiles = [];
+            foreach ($detectedImages as $detectedImage)
+            {
+                $guzzle = (new Client())->get($detectedImage);
+                $fileSize = Arr::first($guzzle->getHeader('Content-Length'));
+                //$fileSize  < 2mb
+                if($fileSize < 2000000)
+                    $uploadedFiles[] = $this->importSingleImage($detectedImage);
+            }
+            return [
+                'success' => true,
+                'images' => $uploadedFiles
+            ];
+        }
+
+
+    }
+
+    private function importSingleImage(string $url)
+    {
 
         $tmpfname = tempnam("/tmp", "UL_IMAGE");
         $file = null;
