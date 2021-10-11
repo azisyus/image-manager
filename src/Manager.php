@@ -18,6 +18,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Intervention\Image\Facades\Image;
 
 class Manager
@@ -738,10 +739,9 @@ class Manager
         {
             //is it a error from guzzle, 403 or bad file idk
             if($exception instanceof TransferException)
-                return [
-                    'success' => false,
-                    'error' => 'failed to fetch url'
-                ];
+                throw ValidationException::withMessages([
+                    'url'  => 'failed to fetch url',
+                ]);
             else //is it something else?
             {
                 throw $exception;
