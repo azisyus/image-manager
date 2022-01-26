@@ -64,16 +64,16 @@ class ImageCreationTest extends BaseTestCase
     public function testUploadImageLimit()
     {
         $this->withoutExceptionHandling();
-        ImageManager::setUploadLimit(3);
+        ImageManager::setUploadLimit(3,\imageManager());
         $r = Request::create('_','POST',[],[],['file' => $this->fetchUploadedFile()]);
-        ImageManager::upload($r);
-        ImageManager::upload($r);
-        ImageManager::upload($r);
+        ImageManager::upload($r,\imageManager());
+        ImageManager::upload($r,\imageManager());
+        ImageManager::upload($r,\imageManager());
 
         $this->expectException(ValidationException::class);
-        ImageManager::upload($r);
+        ImageManager::upload($r,\imageManager());
 
-        $this->assertEquals(3,ImageManager::getModelImageCount());
+        $this->assertEquals(3,ImageManager::getModelImageCount(\imageManager()));
 
 
     }

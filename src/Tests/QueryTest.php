@@ -18,17 +18,17 @@ class QueryTest extends BaseTestCase
         \imageManager()->upload($this->fetchUploadedFile());
 
         $lastImage =  ManagedImage::orderBy('id','DESC')->first();
-        ImageManager::withModel($lastImage,function(){
+        ImageManager::withModel($lastImage,\imageManager(),function(){
             \imageManager()->upload($this->fetchUploadedFile());
             \imageManager()->upload($this->fetchUploadedFile());
             \imageManager()->upload($this->fetchUploadedFile());
         });
 
-        $relatedImageCount = ImageManager::withModel($lastImage,function(){
-            return ImageManager::getFiles();
+        $relatedImageCount = ImageManager::withModel($lastImage,\imageManager(),function(){
+            return ImageManager()->getFiles();
         })->count();
 
-        $allImagesCount = ImageManager::getFiles()->count();
+        $allImagesCount = ImageManager()->getFiles()->count();
 
         $this->assertEquals(3,$relatedImageCount);
         $this->assertEquals(6,$allImagesCount);

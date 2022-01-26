@@ -11,7 +11,6 @@ use Azizyus\ImageManager\ImageManager;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Intervention\Image\Facades\Image;
-use PHPUnit\Util\Test;
 
 class CopyTest extends BaseTestCase
 {
@@ -43,7 +42,7 @@ class CopyTest extends BaseTestCase
         $this->defineTestHead();
         $t1 = TestModel::first();
         $t2 = NextTestModel::orderBy('id','DESC')->first();
-        $result = ImageManager::withModel($t1,function(){
+        $result = ImageManager::withModel($t1,ImageManager(),function(){
             $result = imageManager()->upload($this->fetchUploadedFile());
             imageManager()->upload($this->fetchUploadedFile());
             imageManager()->upload($this->fetchUploadedFile());
@@ -82,7 +81,7 @@ class CopyTest extends BaseTestCase
 
         $this->defineTestHead();
         $t1 = TestModel::first();
-        $result = ImageManager::withModel($t1,function(){
+        $result = ImageManager::withModel($t1,\imageManager(),function(){
             $result = imageManager()->upload($this->fetchUploadedFile());
             imageManager()->upload($this->fetchUploadedFile());
             imageManager()->upload($this->fetchUploadedFile());

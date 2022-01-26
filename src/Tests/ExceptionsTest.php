@@ -4,20 +4,23 @@
 namespace Azizyus\ImageManager\Tests;
 
 
+use Illuminate\Validation\ValidationException;
 use Intervention\Image\Facades\Image;
 
 class ExceptionsTest extends BaseTestCase
 {
 
-    public function testBadUrl()
+    public function testGoodUrl()
     {
         $result = imageManager()->upload($this->fetchUploadedFile());
-        $importResult = imageManager()->importFromUrl('https://localhost/file');
         $importResult1 = imageManager()->importFromUrl($result['imgSrc']);
-
-        $this->assertFalse($importResult['success']);
         $this->assertTrue($importResult1['success']);
     }
 
+    public function testBadUrl()
+    {
+        $this->expectException(ValidationException::class);
+        imageManager()->importFromUrl('http://localhost/file.jpg');
+    }
 
 }

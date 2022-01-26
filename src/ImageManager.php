@@ -4,110 +4,104 @@
 namespace Azizyus\ImageManager;
 
 
-use Azizyus\ImageManager\DB\Repository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\Facades\Validator;
 use function response;
 
-class ImageManager extends Facade
+class ImageManager
 {
-    protected static function getFacadeAccessor()
+
+
+    public static function putModel(Model $model = null,Manager $manager)
     {
-        return 'imageManager';
+        $manager->getRepository()->setModel($model);
     }
 
-    public static function putModel(Model $model = null)
+    public static function withModel(Model $model,Manager $manager,callable $w)
     {
-        self::getFacadeRoot()->getRepository()->setModel($model);
-    }
-
-    public static function withModel(Model $model,callable $w)
-    {
-        self::getFacadeRoot()->getRepository()->setModel($model);
+        $manager->getRepository()->setModel($model);
         $result = $w();
-        self::getFacadeRoot()->getRepository()->setModel(null);
+        $manager->getRepository()->setModel(null);
         return $result;
     }
 
-    public static function chooseSpecialImage(Request $request)
+    public static function chooseSpecialImage(Request $request,Manager $manager)
     {
         $type = $request->get('type');
         $fileName = $request->get('fileName');
-        $r = self::getFacadeRoot()->chooseSpecialImage($type,$fileName);
+        $r = $manager->chooseSpecialImage($type,$fileName);
         if($r['success'])
             return $r;
         return response($r,400);
     }
 
-    public static function setValidation(string $s)
+    public static function setValidation(string $s,Manager $manager)
     {
-        self::getFacadeRoot()->setValidation($s);
+        $manager->setValidation($s);
     }
 
-    public static function specialImages()
+    public static function specialImages(Manager $manager)
     {
-        $r = self::getFacadeRoot()->specialImages();
+        $r = $manager->specialImages();
         if($r['success'])
             return $r;
         return response($r,400);
     }
 
-    public static function importFromUrl(Request $request)
+    public static function importFromUrl(Request $request,Manager $manager)
     {
         $url = $request->get('url');
-        $result = self::getFacadeRoot()->importFromUrl($url);
+        $result = $manager->importFromUrl($url);
 
         if($result['success'])
             return $result; // simply it's 200
         return response($result,400);
     }
 
-    public static function setSort(Request $request)
+    public static function setSort(Request $request,Manager $manager)
     {
         $filesNames = $request->get('fileNames',[]);
-        $result = self::getFacadeRoot()->setSort($filesNames);
+        $result = $manager->setSort($filesNames);
         if($result['success'])
             return $result;
         return response($result,400);
     }
 
-    public static function setUploadLimit(int $limit)
+    public static function setUploadLimit(int $limit,Manager $manager)
     {
-        self::getFacadeRoot()->setUploadImageLimit($limit);
+        $manager->setUploadImageLimit($limit);
     }
 
-    public static function getModelImageCount() : int
+    public static function getModelImageCount(Manager $manager) : int
     {
-        return self::getFacadeRoot()->getRepository()->getModelImageCount();
+        return $manager->getRepository()->getModelImageCount();
     }
 
-    public static function upload(Request $request)
+    public static function upload(Request $request,Manager $manager)
     {
         $file = $request->file('file');
-        $result = self::getFacadeRoot()->upload($file);
+        $result = $manager->upload($file);
 
         if($result['success'])
             return $result; // simply it's 200
         return response($result,400);
     }
 
-    public static function deleteFile(Request $request)
+    public static function deleteFile(Request $request,Manager $manager)
     {
         $fileName = $request->get('fileName');
-        $result = self::getFacadeRoot()->deleteFile($fileName);
+        $result = $manager->deleteFile($fileName);
 
         if($result['success'])
             return $result;
         return response($result,400);
     }
 
-    public static function cropImage(Request $request)
+    public static function cropImage(Request $request,Manager $manager)
     {
         $fileName = $request->get('fileName');
         $cropData = $request->get('cropData');
-        $result = self::getFacadeRoot()->cropImage($fileName,
+        $result = $manager->cropImage($fileName,
             $cropData['x'],
             $cropData['y'],
             $cropData['width'],
@@ -119,9 +113,9 @@ class ImageManager extends Facade
         return response($result,400);
     }
 
-    public static function copyImageIntoNewModel(Model $oldModel,Model $newModel) : void
+    public static function copyImageIntoNewModel(Model $oldModel,Model $newModel,Manager $manager) : void
     {
-        self::getFacadeRoot()->copyImageIntoNewModel($oldModel,$newModel);
+        $manager->copyImageIntoNewModel($oldModel,$newModel);
     }
 
 }

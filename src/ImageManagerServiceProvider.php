@@ -6,32 +6,15 @@ namespace Azizyus\ImageManager;
 
 use Azizyus\ImageManager\Commands\GenerateVariations;
 use Azizyus\ImageManager\DB\Models\ManagedImage;
-use Azizyus\ImageManager\DB\Repository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Events\EventServiceProvider;
-use Illuminate\Filesystem\FilesystemAdapter;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
 
 class ImageManagerServiceProvider extends EventServiceProvider
 {
 
     public function register()
     {
-        $this->app->singleton('imageManager',function(){
-            $s = new Manager(Storage::disk('public'));
-            $s->setDeleteUrl('/delete');
-            $s->setUploadUrl('/upload');
-            $s->setFilesUrl('/files');
-            $s->setSortUrl('/sort');
-            $s->setCropFilesUrl('/crop');
-            $s->setRemoteUrlUploadUrl('/remote');
-            $s->setSpecialImagesUrl('/specialImages');
-            $s->setChooseSpecialImageUrl('/chooseSpecialImage');
-            return $s;
-        });
+
     }
 
     public function boot()

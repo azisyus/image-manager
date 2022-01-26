@@ -19,7 +19,7 @@ class ImageUploadValidationTest extends BaseTestCase
         $r = Request::create('_','POST',[],[],[
             'file' => $f,
         ]);
-        ImageManager::upload($r);
+        ImageManager::upload($r,\imageManager());
     }
 
     public function testMaxFileSizeWithDifferentValidation()
@@ -29,8 +29,8 @@ class ImageUploadValidationTest extends BaseTestCase
         $r = Request::create('_','POST',[],[],[
             'file' => $f,
         ]);
-        ImageManager::setValidation('max:2048');
-        ImageManager::upload($r);
+        ImageManager::setValidation('max:2048',\imageManager());
+        ImageManager::upload($r,\imageManager());
         $this->assertTrue(true);
     }
 
