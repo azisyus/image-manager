@@ -163,6 +163,7 @@ class Manager
      * @param string $key
      * @param int $width
      * @param int $height
+     * @deprecated
      */
     public function defineSpecialImage(string $key, int $width, int $height)
     {
@@ -170,6 +171,32 @@ class Manager
             'width'  => $width,
             'height' => $height,
             'cropAspectRestricted' => false,
+        ]);
+
+        $this->maintainableVariations->put($key,[
+            'width'  =>$width,
+            'height' => $height,
+            'type'  => $key,
+        ]);
+
+    }
+
+    /**
+     * @param string $key
+     * @param int $width
+     * @param int $height
+     */
+    public function defineSpecialImageWithArrayOptions(array $data)
+    {
+        $key = Arr::get($data,'key');
+        $width = Arr::get($data,'width');
+        $height = Arr::get($data,'height');
+        $cropAspectRestricted = Arr::get($data,'cropAspectRestricted',false);
+
+        $this->specialImageDefinitions->put($key,[
+            'width'  => $width,
+            'height' => $height,
+            'cropAspectRestricted' => $cropAspectRestricted,
         ]);
 
         $this->maintainableVariations->put($key,[
