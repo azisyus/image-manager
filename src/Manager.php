@@ -169,6 +169,7 @@ class Manager
         $this->specialImageDefinitions->put($key,[
             'width'  => $width,
             'height' => $height,
+            'cropAspectRestricted' => false,
         ]);
 
         $this->maintainableVariations->put($key,[
@@ -238,7 +239,7 @@ class Manager
             $m = [];
             if($foundImage)
                 $m = $this->map()($foundImage);
-            return array_merge(['type'=>$type,'title'=>$type,'image'=>$m]);
+            return array_merge(['cropAspectRestricted'=>$s['cropAspectRestricted'],'width'=>$s['width'],'height'=>$s['height'],'type'=>$type,'title'=>$type,'image'=>$m]);
         })->values();
         return [
             'success' => true,
