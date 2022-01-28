@@ -12,16 +12,16 @@ class ImageSortTest extends BaseTestCase
     public function testSortUpdate()
     {
         $u = $this->fetchUploadedFile();
-        $result = imageManager()->upload($u);
-        $result1 = imageManager()->upload($u);
+        $result = $this->manager()->upload($u);
+        $result1 = $this->manager()->upload($u);
 
         //reverse order
-        $sortResult = imageManager()->setSort([
+        $sortResult = $this->manager()->setSort([
             $result1['fileName'],
             $result['fileName'],
         ]);
 
-        $allImages = imageManager()->getFiles();
+        $allImages = $this->manager()->getFiles();
 
         //check by 0 -> 1
         //check by 1 -> 0

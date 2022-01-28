@@ -12,12 +12,12 @@ class SpecialImageTest extends BaseTestCase
     public function testSpecialImageGeneration()
     {
 
-        imageManager()->defineSpecialImage('listingThumbnail',150,150);
-        $result = imageManager()->upload($this->fetchUploadedFile());
+        $this->manager()->defineSpecialImage('listingThumbnail',150,150);
+        $result = $this->manager()->upload($this->fetchUploadedFile());
 
-        imageManager()->chooseSpecialImage('listingThumbnail',$result['fileName']);
+        $this->manager()->chooseSpecialImage('listingThumbnail',$result['fileName']);
 
-        $listingThumbnail = imageManager()->getImageByType('listingThumbnail');
+        $listingThumbnail = $this->manager()->getImageByType('listingThumbnail');
 
         $im = Image::make(file_get_contents($listingThumbnail['variations']['listingThumbnail']));
         $this->assertEquals($im->height(),150);
@@ -28,8 +28,8 @@ class SpecialImageTest extends BaseTestCase
     public function testSpecialImageGenerationWithNoCanvas()
     {
 
-        imageManager()->defineSpecialImage('listingThumbnail',150,150);
-        imageManager()->defineVariationImageWithOptions('thumbnail',[
+        $this->manager()->defineSpecialImage('listingThumbnail',150,150);
+        $this->manager()->defineVariationImageWithOptions('thumbnail',[
 
             'type'   => 'listingThumbnail',
             'width'  => 90,
@@ -37,11 +37,11 @@ class SpecialImageTest extends BaseTestCase
             'noCanvas' => true,
 
         ]);
-        imageManager()->setValidation('max:2084|mimes:jpg');
-        $result = imageManager()->upload($this->fetch1dot8MbFile());
-        imageManager()->chooseSpecialImage('listingThumbnail',$result['fileName']);
+        $this->manager()->setValidation('max:2084|mimes:jpg');
+        $result = $this->manager()->upload($this->fetch1dot8MbFile());
+        $this->manager()->chooseSpecialImage('listingThumbnail',$result['fileName']);
 
-        $listingThumbnail = imageManager()->getImageByType('listingThumbnail');
+        $listingThumbnail = $this->manager()->getImageByType('listingThumbnail');
 
         $im = Image::make(file_get_contents($listingThumbnail['variations']['listingThumbnail']));
         $this->assertEquals($im->height(),150);

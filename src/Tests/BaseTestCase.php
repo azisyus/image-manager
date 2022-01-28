@@ -5,9 +5,7 @@ namespace Azizyus\ImageManager\Tests;
 
 
 use Azizyus\ImageManager\Helper\ExampleSingletob;
-use Azizyus\ImageManager\Manager;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Tests\CreatesApplication;
 use Tests\TestCase;
 
@@ -16,12 +14,15 @@ class BaseTestCase extends TestCase
 
     use CreatesApplication;
 
+    protected function manager()
+    {
+        return app('imageManager');
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('migrate:fresh');
-
-        ExampleSingletob::sin();
     }
 
     protected function fetchUploadedFile() : UploadedFile

@@ -13,22 +13,22 @@ class QueryTest extends BaseTestCase
     public function testWrapping()
     {
 
-        \imageManager()->upload($this->fetchUploadedFile());
-        \imageManager()->upload($this->fetchUploadedFile());
-        \imageManager()->upload($this->fetchUploadedFile());
+        $this->manager()->upload($this->fetchUploadedFile());
+        $this->manager()->upload($this->fetchUploadedFile());
+        $this->manager()->upload($this->fetchUploadedFile());
 
         $lastImage =  ManagedImage::orderBy('id','DESC')->first();
-        ImageManager::withModel($lastImage,\imageManager(),function(){
-            \imageManager()->upload($this->fetchUploadedFile());
-            \imageManager()->upload($this->fetchUploadedFile());
-            \imageManager()->upload($this->fetchUploadedFile());
+        ImageManager::withModel($lastImage,$this->manager(),function(){
+            $this->manager()->upload($this->fetchUploadedFile());
+            $this->manager()->upload($this->fetchUploadedFile());
+            $this->manager()->upload($this->fetchUploadedFile());
         });
 
-        $relatedImageCount = ImageManager::withModel($lastImage,\imageManager(),function(){
-            return ImageManager()->getFiles();
+        $relatedImageCount = ImageManager::withModel($lastImage,$this->manager(),function(){
+            return $this->manager()->getFiles();
         })->count();
 
-        $allImagesCount = ImageManager()->getFiles()->count();
+        $allImagesCount = $this->manager()->getFiles()->count();
 
         $this->assertEquals(3,$relatedImageCount);
         $this->assertEquals(6,$allImagesCount);
@@ -41,16 +41,16 @@ class QueryTest extends BaseTestCase
         $fileNames = array_map(function($x){
             return $x['fileName'];
         },[
-            imageManager()->upload($this->fetchUploadedFile()),
-            imageManager()->upload($this->fetchUploadedFile()),
-            imageManager()->upload($this->fetchUploadedFile()),
+            $this->manager()->upload($this->fetchUploadedFile()),
+            $this->manager()->upload($this->fetchUploadedFile()),
+            $this->manager()->upload($this->fetchUploadedFile()),
         ]);
 
-        \imageManager()->setSort(array_reverse($fileNames));
+        $this->manager()->setSort(array_reverse($fileNames));
 
         $queriedFileNames = array_map(function($x){
             return $x['fileName'];
-        },\imageManager()->getFiles()->toArray());
+        },$this->manager()->getFiles()->toArray());
 
         //reversed of reversed should be equal to first values
         $this->assertEquals(array_reverse($queriedFileNames),$fileNames);

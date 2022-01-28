@@ -486,18 +486,15 @@ class Manager
      */
     public function map()
     {
-        return function (ManagedImage $image) {
-            return [
-                'variations' => array_map(function($item){
-                    return $this->adapter->url($item);
-                },$image->variations),
-                'fileName' => $image->fileName,
-                'imgSrc' => $this->adapter->url($image->fileName),
-                'originalSrc' => $this->adapter->url($image->originalFileName),
+        return function(ManagedImage $image){
+            $driver = $image::getStorageDriver();
+            $image::setStorageDriver($this->adapter);
+            $q = ManagedImage::mapper()($image);
+            $image::setStorageDriver($driver);
+            return array_merge($q,[
                 'deleteUrl' => $this->deleteUrl,
                 'cropUrl' => $this->cropFilesUrl
-
-            ];
+            ]);
         };
     }
 

@@ -5,6 +5,7 @@ namespace Azizyus\ImageManager\DB\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Arr;
 
 /**
@@ -47,17 +48,46 @@ class ManagedImage extends Model
         'variations' => 'array'
     ];
 
+    protected static $storage;
+
+    public static function setStorageDriver(FilesystemAdapter $f)
+    {
+        static::$storage = $f;
+    }
+
+    public static function getStorageDriver()
+    {
+        return static::$storage;
+    }
+
     public function getVariation(string $variation) : ?string
     {
         $found = Arr::get($this->variations,$variation,null);
         if($found)
-            return imageManager()->generateFileUrl($found);
+            return static::$storage->url($found);
         return null;
+    }
+
+    public static function mapper()
+    {
+        return function (ManagedImage $image){
+
+            $filesystem = static::$storage;
+            return [
+                'variations' => array_map(function($item)use($filesystem){
+                    return $filesystem->url($item);
+                },$image->variations),
+                'fileName' => $image->fileName,
+                'imgSrc' => $filesystem->url($image->fileName),
+                'originalSrc' => $filesystem->url($image->originalFileName),
+            ];
+        };
     }
 
     public function map()
     {
-        return imageManager()->map()($this);
+        $f = static::mapper();
+        return $f($this);
     }
 
     public function toArray()

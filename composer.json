@@ -11,9 +11,6 @@
     "autoload": {
         "psr-4": {
             "Azizyus\\ImageManager\\": "src/"
-        },
-        "files": [
-            "src/Helper/image_manager.php"
-        ]
+        }
     }
 }

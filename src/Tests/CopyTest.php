@@ -29,9 +29,9 @@ class CopyTest extends BaseTestCase
 
         NextTestModel::create();
         NextTestModel::create();
-        imageManager()->defineVariation('listingPic',300,300,'gallery');
-        imageManager()->defineVariation('sliderBig',900,900,'gallery');
-        imageManager()->defineVariation('sliderSmall',75,75,'gallery');
+        $this->manager()->defineVariation('listingPic',300,300,'gallery');
+        $this->manager()->defineVariation('sliderBig',900,900,'gallery');
+        $this->manager()->defineVariation('sliderSmall',75,75,'gallery');
 
 
     }
@@ -42,18 +42,18 @@ class CopyTest extends BaseTestCase
         $this->defineTestHead();
         $t1 = TestModel::first();
         $t2 = NextTestModel::orderBy('id','DESC')->first();
-        $result = ImageManager::withModel($t1,ImageManager(),function(){
-            $result = imageManager()->upload($this->fetchUploadedFile());
-            imageManager()->upload($this->fetchUploadedFile());
-            imageManager()->upload($this->fetchUploadedFile());
-            \imageManager()->chooseSpecialImage('listingPic',$result['fileName']);
-            \imageManager()->chooseSpecialImage('listingPic',$result['fileName']);
-            \imageManager()->chooseSpecialImage('sliderSmall',$result['fileName']);
+        $result = ImageManager::withModel($t1,$this->manager(),function(){
+            $result = $this->manager()->upload($this->fetchUploadedFile());
+            $this->manager()->upload($this->fetchUploadedFile());
+            $this->manager()->upload($this->fetchUploadedFile());
+            $this->manager()->chooseSpecialImage('listingPic',$result['fileName']);
+            $this->manager()->chooseSpecialImage('listingPic',$result['fileName']);
+            $this->manager()->chooseSpecialImage('sliderSmall',$result['fileName']);
             return $result;
         });
 
         $this->assertTrue($result['success']);
-        imageManager()->copyImageIntoNewModel($t1,$t2);
+        $this->manager()->copyImageIntoNewModel($t1,$t2);
 
         $this->assertEquals($t1->wholeImages()->count(),$t2->wholeImages()->count());
         $t2Images = $t2->wholeImages()->get();
@@ -81,25 +81,25 @@ class CopyTest extends BaseTestCase
 
         $this->defineTestHead();
         $t1 = TestModel::first();
-        $result = ImageManager::withModel($t1,\imageManager(),function(){
-            $result = imageManager()->upload($this->fetchUploadedFile());
-            imageManager()->upload($this->fetchUploadedFile());
-            imageManager()->upload($this->fetchUploadedFile());
-            \imageManager()->chooseSpecialImage('listingPic',$result['fileName']);
-            \imageManager()->chooseSpecialImage('listingPic',$result['fileName']);
-            \imageManager()->chooseSpecialImage('sliderSmall',$result['fileName']);
+        $result = ImageManager::withModel($t1,$this->manager(),function(){
+            $result = $this->manager()->upload($this->fetchUploadedFile());
+            $this->manager()->upload($this->fetchUploadedFile());
+            $this->manager()->upload($this->fetchUploadedFile());
+            $this->manager()->chooseSpecialImage('listingPic',$result['fileName']);
+            $this->manager()->chooseSpecialImage('listingPic',$result['fileName']);
+            $this->manager()->chooseSpecialImage('sliderSmall',$result['fileName']);
             return $result;
         });
         $t1->refresh();
 
         $t1->load('listingPicImage');
 
-        $copier = \imageManager()->copyImage();
+        $copier = $this->manager()->copyImage();
         $newImageName = $copier($t1->listingPicImage->variations['zoneThumbnail']);
 
 
-        $this->assertTrue(\imageManager()->checkFileExist($newImageName));
-        $image = Image::make(\imageManager()->generateFileUrl($newImageName));
+        $this->assertTrue($this->manager()->checkFileExist($newImageName));
+        $image = Image::make($this->manager()->generateFileUrl($newImageName));
         $this->assertEquals(150,$image->height());
         $this->assertEquals(150,$image->width());
     }

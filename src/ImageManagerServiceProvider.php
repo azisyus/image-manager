@@ -19,18 +19,6 @@ class ImageManagerServiceProvider extends EventServiceProvider
 
     public function boot()
     {
-        ManagedImage::created(function(ManagedImage $image){
-            imageManager()->maintainVariations($image->fileName);
-        });
-        ManagedImage::updated(function(ManagedImage $image){
-            if($image->wasChanged('fileName'))
-                imageManager()->maintainVariations($image->fileName);
-        });
-
-        ManagedImage::addGlobalScope('order',function(Builder $builder){
-            return $builder->orderBy('sort','ASC');
-        });
-
         $this->loadViewsFrom(__DIR__.'/Views','ImageManager');
         $this->loadMigrationsFrom(__DIR__.'/Migrations');
         $this->commands([

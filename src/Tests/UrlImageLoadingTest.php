@@ -25,29 +25,29 @@ class UrlImageLoadingTest extends BaseTestCase
         ]);
 
         $val = Validator::make($request->all(),[
-            'file' => \imageManager()->getValidation(),
+            'file' => $this->manager()->getValidation(),
         ]);
         if($val->fails())
             $this->assertTrue(false);
 
-        $result = imageManager()->upload($u);
+        $result = $this->manager()->upload($u);
 
 
 
-        $result1 = imageManager()->importFromUrl($result['imgSrc']);
+        $result1 = $this->manager()->importFromUrl($result['imgSrc']);
         $this->assertEquals(true,$result1['success']);
 
-        $this->assertEquals(2,\imageManager()->getFiles()->count());
+        $this->assertEquals(2,$this->manager()->getFiles()->count());
 
     }
 
     public function testOgImageParsing()
     {
-        $result1 = imageManager()->importFromUrl('https://shop.bulletproof.com/products/brain-octane-oil-32-oz');
-        $result2 = imageManager()->importFromUrl('https://www.w3schools.com/css/img_mountains.jpg');
+        $result1 = $this->manager()->importFromUrl('https://shop.bulletproof.com/products/brain-octane-oil-32-oz');
+        $result2 = $this->manager()->importFromUrl('https://www.w3schools.com/css/img_mountains.jpg');
         $this->assertEquals(true,$result1['success']);
         $this->assertEquals(true,$result2['success']);
-        $this->assertEquals(4,\imageManager()->getFiles()->count());
+        $this->assertEquals(4,$this->manager()->getFiles()->count());
     }
 
 

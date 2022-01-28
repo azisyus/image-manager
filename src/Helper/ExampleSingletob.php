@@ -3,6 +3,7 @@
 namespace Azizyus\ImageManager\Helper;
 
 
+use Azizyus\ImageManager\DB\Models\ManagedImage;
 use Azizyus\ImageManager\Manager;
 use Illuminate\Support\Facades\Storage;
 
@@ -11,6 +12,7 @@ class ExampleSingletob
 
     public static function sin()
     {
+        ManagedImage::setStorageDriver(Storage::disk('public'));
         app()->singleton('imageManager',function(){
             $s = new Manager(Storage::disk('public'));
             $s->setDeleteUrl('/delete');
