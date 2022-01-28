@@ -21,9 +21,24 @@ class ExampleSingletob
             $s->setRemoteUrlUploadUrl('/remote');
             $s->setSpecialImagesUrl('/specialImages');
             $s->setChooseSpecialImageUrl('/chooseSpecialImage');
-            $s->defineSpecialImage('thumbnail',150,150); //choose thumbnail from uploaded images
-            $s->defineSpecialImage('cover',150,150); //choose thumbnail from uploaded images
-            $s->defineVariation('sliderListingImage',75,75,'gallery'); //generate variation for uploaded images except special ones
+            $s->defineSpecialImageWithArrayOptions('thumbnail',[
+                'width' => 150,
+                'height' =>  150,
+                'cropAspectRestricted' => true,
+            ]);
+
+            $s->defineSpecialImageWithArrayOptions('cover',[
+                'width' => 150,
+                'height' =>  150,
+                'cropAspectRestricted' => true,
+            ]);
+
+            $s->defineVariationImageWithOptions('sliderListingImage',[
+                'width' => 75,
+                'height' =>  75,
+                'type' => 'gallery',
+            ]);
+
             $s->setUploadUrl(route('image.upload'));
             $s->setFilesUrl(route('image.files'));
             return $s;

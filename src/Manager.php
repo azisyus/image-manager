@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Intervention\Image\Facades\Image;
+use Azizyus\ImageManager\Helper\AspectRatioChecker;
+
 
 class Manager
 {
@@ -186,9 +188,8 @@ class Manager
      * @param int $width
      * @param int $height
      */
-    public function defineSpecialImageWithArrayOptions(array $data)
+    public function defineSpecialImageWithArrayOptions(string $key,array $data)
     {
-        $key = Arr::get($data,'key');
         $width = Arr::get($data,'width');
         $height = Arr::get($data,'height');
         $cropAspectRestricted = Arr::get($data,'cropAspectRestricted',false);
@@ -200,9 +201,9 @@ class Manager
         ]);
 
         $this->maintainableVariations->put($key,[
-            'width'  =>$width,
+            'width'  => $width,
             'height' => $height,
-            'type'  => $key,
+            'type'   => $key,
         ]);
 
     }
@@ -673,6 +674,20 @@ class Manager
          * @var ManagedImage $imageRecord
          */
         $imageRecord = $this->repository->getByFileName($fileName);
+
+        //for now only special images has crop restriction
+        $specImage = Arr::first($this->specialImageDefinitions,function(array $x,$k)use($imageRecord){
+            return $imageRecord->type == $k;
+        });
+        //some images are obviously forced to be in specific aspectRatio
+        //we simply check them here to make sure the frontend cropper didn't get manipulated by user
+        //so we simply sure it was a right crop with required aspectRatio
+        if($specImage && $specImage['cropAspectRestricted'])
+        {
+            $aspectEquality = AspectRatioChecker::f($width,$height,$specImage['width'],$specImage['height']);
+            if(!$aspectEquality)
+                throw new \Exception('sent cropper coordinates does not corresponds to special image\'s aspect ration');
+        }
         $c = Image::make($this->adapter->get($imageRecord->originalFileName)); //crop via original image
         $c->crop((int)$width,(int)$height,(int)$x,(int)$y);
         $this->adapter->put($fileName,$c->encode());
