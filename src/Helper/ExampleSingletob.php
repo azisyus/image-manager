@@ -47,4 +47,30 @@ class ExampleSingletob
         });
     }
 
+
+    public static function fin()
+    {
+        ManagedImage::setStorageDriver(Storage::disk('public'));
+        app()->singleton('imageManagerSingular',function(){
+            $s = new Manager(Storage::disk('public'));
+            $s->setDeleteUrl(route('singular.image.delete'));
+            $s->setUploadUrl(route('singular.image.upload'));
+            $s->setFilesUrl(route('singular.image.files'));
+            $s->setCropFilesUrl(route('singular.image.crop'));
+
+            $s->setUploadUrl(route('singular.image.upload'));
+            $s->setFilesUrl(route('singular.image.files'));
+
+            $s->setSortUrl(route('singular.image.sort'));
+            $s->setRemoteUrlUploadUrl(route('singular.image.remote'));
+            $s->setSpecialImagesUrl(route('singular.image.specialImages'));
+            $s->setChooseSpecialImageUrl(route('singular.image.chooseSpecialImage'));
+
+            $s->setUploadImageLimit(1);
+            return $s;
+        });
+    }
+
+
+
 }

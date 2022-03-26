@@ -9,18 +9,18 @@ class Builder
 {
 
 
-    public static function routes()
+    public static function routes($controller='UploadController')
     {
-        Route::get('uploader','UploadController@index')->name('index');
-        Route::any('specialImages','UploadController@specialImages')->name('specialImages');
-        Route::any('chooseSpecialImage','UploadController@chooseSpecialImage')->name('chooseSpecialImage');
-        Route::any('upload','UploadController@upload')->name('upload');
-        Route::any('listing','UploadController@listing')->name('listing');
-        Route::any('sort','UploadController@sort')->name('sort');
-        Route::any('remote','UploadController@remote')->name('remote');
-        Route::any('delete','UploadController@delete')->name('delete');
-        Route::any('crop','UploadController@crop')->name('crop');
-        Route::any('files','UploadController@files')->name('files');
+        Route::get('uploader',$controller.'@index')->name('index');
+        Route::any('specialImages',$controller.'@specialImages')->name('specialImages');
+        Route::any('chooseSpecialImage',$controller.'@chooseSpecialImage')->name('chooseSpecialImage');
+        Route::any('upload',$controller.'@upload')->name('upload');
+        Route::any('listing',$controller.'@listing')->name('listing');
+        Route::any('sort',$controller.'@sort')->name('sort');
+        Route::any('remote',$controller.'@remote')->name('remote');
+        Route::any('delete',$controller.'@delete')->name('delete');
+        Route::any('crop',$controller.'@crop')->name('crop');
+        Route::any('files',$controller.'@files')->name('files');
     }
 
 }

@@ -9,7 +9,7 @@ use Azizyus\ImageManager\Manager;
 class VueComponentBuilder
 {
 
-    public static function build(Manager $m)
+    public static function build(Manager $m,string $s='vue')
     {
         $data = [
 
@@ -22,7 +22,7 @@ class VueComponentBuilder
             'chooseSpecialImageUrl' => $m->getChooseSpecialImageUrl(),
 
         ];
-        return view('ImageManager::vue')->with($data);
+        return view('ImageManager::'.$s)->with($data);
     }
 
 }
