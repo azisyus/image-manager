@@ -4,8 +4,10 @@
 namespace Azizyus\ImageManager;
 
 
+use Azizyus\ImageManager\Helper\AspectRatioChecker;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use function response;
 
 class ImageManager
@@ -101,6 +103,30 @@ class ImageManager
     {
         $fileName = $request->get('fileName');
         $cropData = $request->get('cropData');
+        $result = $manager->cropImage($fileName,
+            $cropData['x'],
+            $cropData['y'],
+            $cropData['width'],
+            $cropData['height']
+        );
+
+        if($result['success'])
+            return $result;
+        return response($result,400);
+    }
+
+    public static function cropImageStatic(Request $request,Manager $manager,array $d = [])
+    {
+        $fileName = $request->get('fileName');
+        $cropData = $request->get('cropData');
+
+        if(Arr::has($d,['width','height']))
+        {
+            $result = AspectRatioChecker::f(Arr::get($d,'width'),Arr::get($d,'height'),$cropData['width'],$cropData['height']);
+            if(!$result)
+                throw new \Exception('bad aspect ratio');
+        }
+
         $result = $manager->cropImage($fileName,
             $cropData['x'],
             $cropData['y'],

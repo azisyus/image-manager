@@ -67,6 +67,7 @@ class ExampleSingletob
             $s->setChooseSpecialImageUrl(route('singular.image.chooseSpecialImage'));
 
             $s->setUploadImageLimit(1);
+
             return $s;
         });
     }
