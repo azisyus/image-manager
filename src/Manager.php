@@ -672,13 +672,13 @@ class Manager
          */
         $imageRecord = $this->repository->getByFileName($fileName);
 
-        //for now only special images has crop restriction
+        //for now only special images which has crop restriction
         $specImage = Arr::first($this->specialImageDefinitions,function(array $x,$k)use($imageRecord){
             return $imageRecord->type == $k;
         });
         //some images are obviously forced to be in specific aspectRatio
         //we simply check them here to make sure the frontend cropper didn't get manipulated by user
-        //so we simply sure it was a right crop with required aspectRatio
+        //so we simply make sure it was a right crop with required aspectRatio
         if($specImage && $specImage['cropAspectRestricted'])
         {
             $aspectEquality = AspectRatioChecker::f($width,$height,$specImage['width'],$specImage['height']);
