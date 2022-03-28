@@ -17,7 +17,13 @@ trait Relation
 
     public function __call($name, $arguments)
     {
-        if(str_ends_with($name,'Image'))
+        if ($name === 'imageSingular')
+        {
+            return $this->hasOne(ManagedImage::class,'relatedModelId','id')
+                ->where('relatedModel',$this->getMorphClass())
+                ->where('type','gallery');
+        }
+        else if(str_ends_with($name,'Image'))
         {
             return $this->hasOne(ManagedImage::class,'relatedModelId','id')
                 ->where('relatedModel',$this->getMorphClass())
