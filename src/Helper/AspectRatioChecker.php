@@ -9,6 +9,8 @@ class AspectRatioChecker
     {
         $t1 = (float)$r1/(float)$r2;
         $t2 = (float)$q1/(float)$q2;
-        return (string)$t1 === (string)$t2;
+        $t1 = round($t1,3);
+        $t2 = round($t2,3);
+        return $t1 - $t2 < 0.010;
     }
 }
