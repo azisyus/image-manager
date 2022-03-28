@@ -11,6 +11,6 @@ class AspectRatioChecker
         $t2 = (float)$q1/(float)$q2;
         $t1 = round($t1,3);
         $t2 = round($t2,3);
-        return $t1 - $t2 < 0.010;
+        return (max($t1,$t2) - min($t2,$t1)) < 0.010;
     }
 }
