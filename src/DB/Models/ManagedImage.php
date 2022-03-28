@@ -4,6 +4,7 @@
 namespace Azizyus\ImageManager\DB\Models;
 
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Arr;
@@ -21,6 +22,7 @@ use Illuminate\Support\Arr;
  * @property string $type
  * @property string $relatedModelId
  * @property string $relatedModel
+ * @property string $groupName
  *
  *
  *
@@ -38,6 +40,7 @@ class ManagedImage extends Model
         'type',
         'relatedModelId',
         'relatedModel',
+        'groupName',
     ];
 
     protected $attributes = [
@@ -94,5 +97,16 @@ class ManagedImage extends Model
     {
         return $this->map();
     }
+
+    public static function specificGroup(callable $built,$group = null) : object
+    {
+        static::addGlobalScope('group',function($query)use($group){
+            $query->where('groupName',$group);
+        });
+        $result = $built();
+        static::addGlobalScope('group',function($query)use($group){});
+        return $result;
+    }
+
 
 }

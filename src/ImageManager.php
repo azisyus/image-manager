@@ -19,11 +19,13 @@ class ImageManager
         $manager->getRepository()->setModel($model);
     }
 
-    public static function withModel(Model $model,Manager $manager,callable $w)
+    public static function withModel(Model $model,Manager $manager,callable $w,string $group = null)
     {
         $manager->getRepository()->setModel($model);
+        $manager->getRepository()->setGroup($group);
         $result = $w();
         $manager->getRepository()->setModel(null);
+        $manager->getRepository()->setGroup(null);
         return $result;
     }
 

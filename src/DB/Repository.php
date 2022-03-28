@@ -23,6 +23,16 @@ class Repository
     }
 
     /**
+     * @var string|null
+     */
+    protected $group = null;
+
+    public function setGroup(?string $group)
+    {
+        $this->group = $group;
+    }
+
+    /**
      * @return int
      */
     public function getModelImageCount() : int
@@ -37,7 +47,8 @@ class Repository
         if($this->model)
             return ManagedImage::query()
                 ->where('relatedModelId',$this->model->getKey())
-                ->where('relatedModel',get_class($this->model));
+                ->where('relatedModel',get_class($this->model))
+                ->where('groupName',$this->group);
 
         return ManagedImage::query();
     }
@@ -62,7 +73,8 @@ class Repository
             'sort' => $this->baseQuery()->count(),
             'relatedModelId' => $this->model!==null ? $this->model->getKey() : null,
             'relatedModel' => $this->model!==null ? get_class($this->model) : null,
-            'type' => $type
+            'type' => $type,
+            'groupName' => $this->group
         ]);
     }
 
