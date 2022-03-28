@@ -12,7 +12,11 @@ class ExampleSingletob
 
     public static function sin()
     {
+        //storage drive of image
         ManagedImage::setStorageDriver(Storage::disk('public'));
+
+
+        //storage image for manager
         app()->singleton('imageManager',function(){
             $s = new Manager(Storage::disk('public'));
             $s->setDeleteUrl('/delete');
