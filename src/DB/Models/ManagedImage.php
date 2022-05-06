@@ -98,7 +98,7 @@ class ManagedImage extends Model
         return $this->map();
     }
 
-    public static function specificGroup(callable $built,$group = null) : object
+    public static function specificGroup(callable $built,$group = null) : ?object
     {
         static::addGlobalScope('group',function($query)use($group){
             $query->where('groupName',$group);
