@@ -19,6 +19,11 @@ class BaseTestCase extends TestCase
         return app('imageManager');
     }
 
+    protected function singularManager()
+    {
+        return app('imageManagerSingular');
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

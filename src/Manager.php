@@ -238,7 +238,9 @@ class Manager
         if($oldSpecialImage)
             $this->deleteFile($oldSpecialImage->fileName);
 
-        return $this->repository->createImage($newFileName,$newOriginalFileName,$imageRecord->size,$imageRecord->extension,$type);
+        $q = $this->repository->createImage($newFileName,$newOriginalFileName,$imageRecord->size,$imageRecord->extension,$type);
+        $this->maintainVariations($q->fileName);
+        return $q;
     }
 
     /**
@@ -563,8 +565,8 @@ class Manager
         $this->adapter->put($fileName,$file->getContent());
         $this->adapter->put($originalFileName,$file->getContent());
         $image = $this->repository->createImage($fileName,$originalFileName,$file->getSize(),$file->extension(),'gallery');
+        $this->maintainVariations($image->fileName);
         $image->refresh();
-
         return array_merge([
             'success' => true,
             'error' => null,
@@ -692,8 +694,8 @@ class Manager
         $imageRecord->fileName = $newFileName;
         $this->adapter->rename($fileName,$newFileName);
         $imageRecord->save();
+        $this->maintainVariations($imageRecord->fileName);
         $imageRecord->refresh();
-
         return array_merge([
             'success' => true,
             'error' => null,

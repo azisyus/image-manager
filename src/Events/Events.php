@@ -10,20 +10,19 @@ use Illuminate\Database\Eloquent\Builder;
 class Events
 {
 
+    /**
+     * @param callable $f
+     * @return void
+     *
+     * leaving empty for bc i don't really want to refactor old code
+     *
+     * @deprecated
+     */
     public static function register(callable $f)
     {
-        ManagedImage::created(function(ManagedImage $image)use($f){
-            $manager = $f();
-            $manager->maintainVariations($image->fileName);
-        });
-        ManagedImage::updated(function(ManagedImage $image)use($f){
-            $manager = $f();
-            if($image->wasChanged('fileName'))
-                $manager->maintainVariations($image->fileName);
-        });
-        ManagedImage::addGlobalScope('order',function(Builder $builder){
-            return $builder->orderBy('sort','ASC');
-        });
+
     }
+
+
 
 }
