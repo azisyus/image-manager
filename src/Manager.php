@@ -193,6 +193,7 @@ class Manager
         $width = Arr::get($data,'width');
         $height = Arr::get($data,'height');
         $cropAspectRestricted = Arr::get($data,'cropAspectRestricted',false);
+        $noCanvas = Arr::get($data,'noCanvas',false);
 
         $this->specialImageDefinitions->put($key,[
             'width'  => $width,
@@ -204,6 +205,7 @@ class Manager
             'width'  => $width,
             'height' => $height,
             'type'   => $key,
+            'noCanvas' => $noCanvas
         ]);
 
     }
