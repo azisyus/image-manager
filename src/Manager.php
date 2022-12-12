@@ -557,7 +557,8 @@ class Manager
             {
                 $limit = $this->getUploadImageLimit();
                 if($value+1 > $limit)
-                    $fail('you can only upload '.$limit.' image');
+
+                    $fail(trans('imageValidation.uploadLimit',['limit'=>$limit]));
             }
         ]);
 
