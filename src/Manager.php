@@ -7,6 +7,7 @@ namespace Azizyus\ImageManager;
 use Azizyus\ImageManager\DB\Models\ManagedImage;
 use Azizyus\ImageManager\DB\Repository;
 use Azizyus\ImageManager\Exceptions\RecordDoesNotExist;
+use Azizyus\ImageManager\Naming\Generators;
 use Fusonic\OpenGraph\Consumer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
@@ -141,6 +142,11 @@ class Manager
     protected $specialImageDefinitions = [];
 
     /**
+     * @var callable|null
+     */
+    protected $nameGenerator = null;
+
+    /**
      * Manager constructor.
      * @param FilesystemAdapter $adapter
      */
@@ -150,7 +156,13 @@ class Manager
         $this->repository = new Repository();
         $this->maintainableVariations = collect();
         $this->specialImageDefinitions = collect();
+        $this->setNameGenerator(Generators::unique());
         $this->defineVariation('zoneThumbnail',150,150,'zoneThumbnail');
+    }
+
+    public function setNameGenerator(callable $f)
+    {
+        $this->nameGenerator = $f;
     }
 
     /**
@@ -597,7 +609,11 @@ class Manager
      */
     private function generateRandomFileName(string $extension) : string
     {
-        return uniqid().'.'.$extension;
+        $f = $this->nameGenerator;
+        if($f)
+            return $f($extension);
+        else
+            throw new \Exception('no name generator found');
     }
 
     /**

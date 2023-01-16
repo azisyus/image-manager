@@ -5,6 +5,7 @@ namespace Azizyus\ImageManager\Helper;
 
 use Azizyus\ImageManager\DB\Models\ManagedImage;
 use Azizyus\ImageManager\Manager;
+use Azizyus\ImageManager\Naming\Generators;
 use Illuminate\Support\Facades\Storage;
 
 class ExampleSingletob
@@ -47,6 +48,9 @@ class ExampleSingletob
 
             $s->setUploadUrl(route('image.upload'));
             $s->setFilesUrl(route('image.files'));
+
+            $s->setNameGenerator(Generators::forced('webp'));
+
             return $s;
         });
     }
@@ -71,6 +75,8 @@ class ExampleSingletob
             $s->setChooseSpecialImageUrl(route('singular.image.chooseSpecialImage'));
 
             $s->setUploadImageLimit(1);
+
+            $s->setNameGenerator(Generators::forced('webp'));
 
             return $s;
         });
