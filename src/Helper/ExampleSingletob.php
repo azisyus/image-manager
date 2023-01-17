@@ -32,24 +32,34 @@ class ExampleSingletob
                 'width' => 150,
                 'height' =>  150,
                 'cropAspectRestricted' => true,
+                'targetExtension' => 'webp',
             ]);
 
             $s->defineSpecialImageWithArrayOptions('cover',[
                 'width' => 150,
                 'height' =>  150,
                 'cropAspectRestricted' => true,
+                'targetExtension' => 'webp',
             ]);
 
             $s->defineVariationImageWithOptions('sliderListingImage',[
                 'width' => 75,
                 'height' =>  75,
                 'type' => 'gallery',
+                'targetExtension' => 'webp',
+            ]);
+
+            $s->defineVariationImageWithOptions('zoneThumbnail',[
+                'type' => 'zoneThumbnail',
+                'width' => 150,
+                'height' => 150,
+                'targetExtension' => 'webp',
             ]);
 
             $s->setUploadUrl(route('image.upload'));
             $s->setFilesUrl(route('image.files'));
 
-            $s->setNameGenerator(Generators::forced('webp'));
+            $s->setNameGenerator(Generators::unique());
 
             return $s;
         });

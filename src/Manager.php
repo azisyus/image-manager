@@ -205,19 +205,22 @@ class Manager
         $width = Arr::get($data,'width');
         $height = Arr::get($data,'height');
         $cropAspectRestricted = Arr::get($data,'cropAspectRestricted',false);
+        $targetExtension = Arr::get($data,'targetExtension',null);
         $noCanvas = Arr::get($data,'noCanvas',false);
 
         $this->specialImageDefinitions->put($key,[
             'width'  => $width,
             'height' => $height,
             'cropAspectRestricted' => $cropAspectRestricted,
+            'targetExtension' => $targetExtension,
         ]);
 
         $this->maintainableVariations->put($key,[
             'width'  => $width,
             'height' => $height,
             'type'   => $key,
-            'noCanvas' => $noCanvas
+            'noCanvas' => $noCanvas,
+            'targetExtension' => $targetExtension,
         ]);
 
     }
@@ -381,8 +384,9 @@ class Manager
             ->map(function(array $variation)use($file,$imageRecord){
 
                 $noCanvas = Arr::get($variation,'noCanvas',false);
-                $newVariationImageName = $this->generateRandomFileName($imageRecord->extension);
-                $resized = call_user_func_array(function(bool $nocanvas,$variation,$imageRecord,$file)
+                $targetExtension = Arr::get($variation,'targetExtension',null);
+                $newVariationImageName = $this->generateRandomFileName($targetExtension??$imageRecord->extension);
+                $resized = call_user_func_array(function(bool $nocanvas,$variation,$imageRecord,$file,$targetExtension)
                 {
                     /**
                      * @var \Intervention\Image\Image $canvas
@@ -390,20 +394,21 @@ class Manager
                      * @var ManagedImage $imageRecord
                      */
 
+
                     $resized = Image::make($file)->resize($variation['width'],$variation['height'],function($c){
                         $c->aspectRatio();
                     });
 
                     if($nocanvas) //no absolute canvas just return
-                        return $resized->encode($imageRecord->extension)->getEncoded();
+                        return $resized->encode($targetExtension??$imageRecord->extension)->getEncoded();
 
                     //import insert into canvas to achieve absolute width-height for everyimage
                     $canvas = Image::canvas($variation['width'],$variation['height']);
                     return $canvas->insert($resized,'center')
-                            ->encode($imageRecord->extension)
+                            ->encode($targetExtension??$imageRecord->extension)
                             ->getEncoded();
 
-                },[$noCanvas,$variation,$imageRecord,$file]);
+                },[$noCanvas,$variation,$imageRecord,$file,$targetExtension]);
 
 
                 $this->adapter->put(
