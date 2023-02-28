@@ -58,7 +58,7 @@ class Manager
     /**
      * @var string
      */
-    protected $validation = 'mimes:jpeg,jpg,png,bmp|max:1024';
+    protected $validation = 'mimes:jpeg,jpg,png,bmp,svg|max:1024';
 
     /**
      * @var String
@@ -383,32 +383,40 @@ class Manager
             ->whereIn('type',[$imageRecord->type,'global','zoneThumbnail'])
             ->map(function(array $variation)use($file,$imageRecord){
 
+
                 $noCanvas = Arr::get($variation,'noCanvas',false);
-                $targetExtension = Arr::get($variation,'targetExtension',null);
+                $targetExtension = $imageRecord->extension !== 'svg' ? Arr::get($variation,'targetExtension',null) : 'svg';
                 $newVariationImageName = $this->generateRandomFileName($targetExtension??$imageRecord->extension);
-                $resized = call_user_func_array(function(bool $nocanvas,$variation,$imageRecord,$file,$targetExtension)
+                if($imageRecord->extension === 'svg')
+                    $resized = $file;
+                else
                 {
-                    /**
-                     * @var \Intervention\Image\Image $canvas
-                     * @var \Intervention\Image\Image $resized
-                     * @var ManagedImage $imageRecord
-                     */
+                    $resized = call_user_func_array(function(bool $nocanvas,$variation,$imageRecord,$file,$targetExtension)
+                    {
+
+                        /**
+                         * @var \Intervention\Image\Image $canvas
+                         * @var \Intervention\Image\Image $resized
+                         * @var ManagedImage $imageRecord
+                         */
 
 
-                    $resized = Image::make($file)->resize($variation['width'],$variation['height'],function($c){
-                        $c->aspectRatio();
-                    });
 
-                    if($nocanvas) //no absolute canvas just return
-                        return $resized->encode($targetExtension??$imageRecord->extension)->getEncoded();
+                        $resized = Image::make($file)->resize($variation['width'],$variation['height'],function($c){
+                            $c->aspectRatio();
+                        });
 
-                    //import insert into canvas to achieve absolute width-height for everyimage
-                    $canvas = Image::canvas($variation['width'],$variation['height']);
-                    return $canvas->insert($resized,'center')
+                        if($nocanvas) //no absolute canvas just return
+                            return $resized->encode($targetExtension??$imageRecord->extension)->getEncoded();
+
+                        //import insert into canvas to achieve absolute width-height for everyimage
+                        $canvas = Image::canvas($variation['width'],$variation['height']);
+                        return $canvas->insert($resized,'center')
                             ->encode($targetExtension??$imageRecord->extension)
                             ->getEncoded();
 
-                },[$noCanvas,$variation,$imageRecord,$file,$targetExtension]);
+                    },[$noCanvas,$variation,$imageRecord,$file,$targetExtension]);
+                }
 
 
                 $this->adapter->put(
@@ -514,7 +522,8 @@ class Manager
             $image::setStorageDriver($driver);
             return array_merge($q,[
                 'deleteUrl' => $this->deleteUrl,
-                'cropUrl' => $this->cropFilesUrl
+                'cropUrl' => $this->cropFilesUrl,
+                'cropable' => $image->extension !== 'svg',
             ]);
         };
     }

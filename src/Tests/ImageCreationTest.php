@@ -33,6 +33,9 @@ class ImageCreationTest extends BaseTestCase
         $this->assertEquals($u->getSize(),strlen($file));
 
 
+        //check croppable status
+        $this->assertEquals(true,$result['cropable']);
+
 
         //deleted file will return 404
         $this->manager()->deleteFile($result['fileName']);

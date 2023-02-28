@@ -30,6 +30,11 @@ class BaseTestCase extends TestCase
         $this->artisan('migrate:fresh');
     }
 
+    protected function fetchSVGFile() : UploadedFile
+    {
+        return new UploadedFile(__DIR__.'/Images/the_svg.svg',"UL_IMAGE",mime_content_type(__DIR__.'/Images/the_svg.svg'),UPLOAD_ERR_OK,true);
+    }
+
     protected function fetchUploadedFile() : UploadedFile
     {
         return new UploadedFile(__DIR__.'/Images/test_image.jpg',"UL_IMAGE",mime_content_type(__DIR__.'/Images/test_image.jpg'),UPLOAD_ERR_OK,true);
