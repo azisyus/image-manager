@@ -17,6 +17,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -421,7 +422,9 @@ class Manager
 
                 $this->adapter->put(
                   $newVariationImageName,
-                  $resized
+                  $resized,[
+                        'ContentType' => $this->adapter->mimeType($imageRecord->fileName),
+                    ]
                 );
 
                 return $newVariationImageName;
@@ -591,8 +594,13 @@ class Manager
         $fileName = $this->generateRandomFileName($file->extension());
         $originalFileName = $this->generateRandomFileName($file->extension());
 
-        $this->adapter->put($fileName,$file->getContent());
-        $this->adapter->put($originalFileName,$file->getContent());
+        $this->adapter->put($fileName,$file->getContent(),[
+            'ContentType' => $file->getMimeType() == 'image/svg' ? 'image/svg+xml' : $file->getMimeType(),
+        ]);
+        $this->adapter->put($originalFileName,$file->getContent(),[
+            'ContentType' => $file->getMimeType() == 'image/svg' ? 'image/svg+xml' : $file->getMimeType(),
+        ]);
+
         $image = $this->repository->createImage($fileName,$originalFileName,$file->getSize(),$file->extension(),'gallery');
         $this->maintainVariations($image->fileName);
         $image->refresh();
@@ -613,7 +621,9 @@ class Manager
     protected function generateVariation(string $fileName, string $variationFileName, int $width = null, int $height = null) : string
     {
         $image = Image::make($this->adapter->read($fileName))->fit($width,$height);
-        $this->adapter->put($variationFileName,$image->getEncoded());
+        $this->adapter->put($variationFileName,$image->getEncoded(),[
+            'ContentType' => $this->adapter->getMimetype($fileName),
+        ]);
         return $variationFileName;
     }
 
@@ -722,7 +732,9 @@ class Manager
         }
         $c = Image::make($this->adapter->get($imageRecord->originalFileName)); //crop via original image
         $c->crop((int)$width,(int)$height,(int)$x,(int)$y);
-        $this->adapter->put($fileName,$c->encode());
+        $this->adapter->put($fileName,$c->encode(),[
+            'ContentType' => $this->adapter->mimeType($imageRecord->originalFileName)
+        ]);
         $newFileName = $this->generateRandomFileName($imageRecord->extension);
         $imageRecord->fileName = $newFileName;
         $this->adapter->rename($fileName,$newFileName);

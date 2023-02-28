@@ -19,7 +19,7 @@ class SVGTest extends BaseTestCase
         $result = ImageManager::upload($r,$this->manager());
         $this->assertEquals(false,$result['cropable']);
         $this->assertEquals('svg',explode('.',$result['fileName'])[1]);
-        $this->assertEquals('image/svg',File::mimeType(public_path('storage/').$result['fileName']));
+        $this->assertEquals('image/svg+xml',File::mimeType(public_path('storage/').$result['fileName']).'+xml');
     }
 
 
