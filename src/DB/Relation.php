@@ -43,6 +43,14 @@ trait Relation
             return $this->hasMany(ManagedImage::class,'relatedModelId','id')
                 ->where('relatedModel',$this->getMorphClass());
         }
+        //companyLogoSingleGroupImage
+        else if (str_ends_with($name,'SingleGroupImage'))
+        {
+            return $this->hasOne(ManagedImage::class,'relatedModelId','id')
+                ->where('relatedModel',$this->getMorphClass())
+                ->where('type','gallery')
+                ->where('groupName',str_replace('SingleGroupImage','',$name));
+        }
         return parent::__call($name,$arguments);
     }
 
