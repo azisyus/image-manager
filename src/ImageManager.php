@@ -141,6 +141,18 @@ class ImageManager
         return response($result,400);
     }
 
+    public static function updateAltText(Request $request, Manager $manager)
+    {
+        $fileName = $request->get('fileName');
+        $altText = $request->get('alt');
+        $result = $manager->updateAltText($fileName, $altText);
+
+        if ($result['success']) {
+            return $result;
+        }
+        return response($result, 400);
+    }
+
     public static function copyImageIntoNewModel(Model $oldModel,Model $newModel,Manager $manager) : void
     {
         $manager->copyImageIntoNewModel($oldModel,$newModel);

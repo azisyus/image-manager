@@ -51,7 +51,7 @@ class ManagedImage extends Model
 
     protected $casts = [
         'variations' => 'array',
-        'alt' => 'array'
+        'alt' => 'object'
     ];
 
     protected static $storage;
