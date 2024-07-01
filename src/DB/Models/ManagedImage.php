@@ -94,7 +94,7 @@ class ManagedImage extends Model
                 'fileName' => $image->fileName,
                 'imgSrc' => $filesystem->url($image->fileName),
                 'originalSrc' => $filesystem->url($image->originalFileName),
-                'alt' => $filesystem->alt
+                'alt' => $image->alt
             ];
         };
     }
