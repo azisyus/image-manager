@@ -21,6 +21,7 @@ class Builder
         Route::any('delete',$controller.'@delete')->name('delete');
         Route::any('crop',$controller.'@crop')->name('crop');
         Route::any('files',$controller.'@files')->name('files');
+        Route::any('altText',$controller.'@altText')->name('altText');
     }
 
 }

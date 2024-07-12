@@ -903,4 +903,11 @@ class Manager
 
     }
 
+    public function updateAltText($fileName, $altText)
+    {
+        $image = $this->repository-setAlt($fileName, $altText);
+
+        return ['success' => true, 'data' => $image];
+    }
+
 }

@@ -41,14 +41,17 @@ class ManagedImage extends Model
         'relatedModelId',
         'relatedModel',
         'groupName',
+        'alt'
     ];
 
     protected $attributes = [
-        'variations' => '[]'
+        'variations' => '[]',
+        'alt' => '{}'
     ];
 
     protected $casts = [
-        'variations' => 'array'
+        'variations' => 'array',
+        'alt' => 'object'
     ];
 
     protected static $storage;
@@ -91,6 +94,7 @@ class ManagedImage extends Model
                 'fileName' => $image->fileName,
                 'imgSrc' => $filesystem->url($image->fileName),
                 'originalSrc' => $filesystem->url($image->originalFileName),
+                'alt' => $image->alt
             ];
         };
     }

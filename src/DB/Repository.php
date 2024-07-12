@@ -128,4 +128,15 @@ class Repository
         return $this->baseQuery()->whereIn('id',$ids);
     }
 
+    public function setAlt(string $fileName, $value)
+    {
+        $found = $this->getByFileName($fileName);
+
+        if(!$found)
+            throw new FileRecordDoesntExist();
+
+        $found->alt = $value;
+        $found->save();
+    }
+
 }
