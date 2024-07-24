@@ -560,12 +560,17 @@ class Manager
          * @var ManagedImage $imageRecord
          */
         $imageRecord = $this->repository->getByFileName($fileName);
-        if(!$imageRecord)
+        if (!$imageRecord)
             throw new RecordDoesNotExist();
 
         $this->repository->deleteFileByName($imageRecord->fileName);
         $this->adapter->delete($imageRecord->fileName);
         $this->adapter->delete($imageRecord->originalFileName);
+
+        foreach ($imageRecord->variations as $variation)
+        {
+            $this->adapter->delete($variation);
+        }
 
         return ['success' => true];
     }
